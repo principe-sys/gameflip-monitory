@@ -1,0 +1,18 @@
+# Railway Configuration
+# Este archivo es opcional - Railway puede detectar automáticamente Node.js
+# Si quieres configuraciones específicas, descomenta y ajusta
+
+# [build]
+# builder = "NIXPACKS"
+
+# [deploy]
+# startCommand = "npm start"
+# healthcheckPath = "/"
+# healthcheckTimeout = 100
+# restartPolicyType = "ON_FAILURE"
+# restartPolicyMaxRetries = 10
+
+# Nota: Para múltiples servicios (backend + frontend),
+# es mejor configurarlos como servicios separados en Railway Dashboard.
+# Este archivo es principalmente para el servicio backend (raíz).
+
