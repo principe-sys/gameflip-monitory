@@ -53,3 +53,20 @@ Windows:
 ```
 npm install 'gameflip/gfapi'
 ```
+
+## Full-stack server (Express + SPA)
+
+This repository also ships an Express server that now serves the API under `/api` and the React SPA at `/`.
+
+### Environment variables
+- `GAMEFLIP_API_KEY` or `GFAPI_KEY`: Gameflip API key used by the backend.
+- `GAMEFLIP_API_SECRET` or `GFAPI_SECRET`: Gameflip API secret used by the backend.
+- `PORT`: Port for Express (Railway injects this automatically).
+
+### Commands
+```
+npm install
+npm run dev
+npm run build
+npm start
+```
