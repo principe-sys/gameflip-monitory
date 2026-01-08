@@ -127,11 +127,13 @@ app.use('/api', (req, res) => {
 const distPath = path.join(__dirname, '..', 'frontend', 'dist');
 app.use(express.static(distPath));
 
-app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-        return next();
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'), (err) => {
+    if (err) {
+      // si no existe dist/index.html, devolvemos algo claro
+      res.status(500).json({ error: 'Frontend build missing', details: 'frontend/dist/index.html not found' });
     }
-    res.sendFile(path.join(distPath, 'index.html'));
+  });
 });
 
 app.listen(port, () => {

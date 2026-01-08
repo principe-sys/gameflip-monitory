@@ -25,7 +25,7 @@
   "scripts": {
     "start": "node app/server.js",
     "build": "npm --prefix frontend install && npm --prefix frontend run build",
-    "dev": "concurrently \"nodemon app/server.js\" \"npm --prefix frontend run dev\"",
+    "dev": "concurrently \"nodemon --watch app app/server.js\" \"npm --prefix frontend run dev\""
     "bulk_listing": "node src/samples/bulk_listing.js",
     "docs": "jsdoc -c jsdoc_conf.js -d docs -P package.json index.js; (cd src/samples && docco -o ../../docs/samples *.js *.rb)"
   },
