@@ -1,112 +1,113 @@
 const express = require('express');
-const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
 app.use(express.json());
 
-// Registrar todas las rutas
-app.use('/accounts', require('./routes/accounts'));
-app.use('/analytics', require('./routes/analytics'));
-app.use('/bulk', require('./routes/bulk'));
-app.use('/competitors', require('./routes/competitors'));
-app.use('/dashboard', require('./routes/dashboard'));
-app.use('/exchanges', require('./routes/exchanges'));
-app.use('/health', require('./routes/health'));
-app.use('/listings', require('./routes/listings'));
-app.use('/products', require('./routes/products'));
-app.use('/profile', require('./routes/profile'));
-app.use('/settings', require('./routes/settings'));
-app.use('/steam', require('./routes/steam'));
-app.use('/wallet', require('./routes/wallet'));
+const apiRouter = express.Router();
 
-// Ruta principal
-app.get('/', (req, res) => {
+apiRouter.use('/accounts', require('./routes/accounts'));
+apiRouter.use('/analytics', require('./routes/analytics'));
+apiRouter.use('/bulk', require('./routes/bulk'));
+apiRouter.use('/competitors', require('./routes/competitors'));
+apiRouter.use('/dashboard', require('./routes/dashboard'));
+apiRouter.use('/exchanges', require('./routes/exchanges'));
+apiRouter.use('/health', require('./routes/health'));
+apiRouter.use('/listings', require('./routes/listings'));
+apiRouter.use('/products', require('./routes/products'));
+apiRouter.use('/profile', require('./routes/profile'));
+apiRouter.use('/settings', require('./routes/settings'));
+apiRouter.use('/steam', require('./routes/steam'));
+apiRouter.use('/wallet', require('./routes/wallet'));
+
+apiRouter.get('/', (req, res) => {
     res.json({
         message: 'GameFlip API Server',
         version: '1.0.0',
         endpoints: {
             accounts: [
-                'GET /accounts',
-                'GET /accounts/:listingId',
-                'POST /accounts',
-                'POST /accounts/:listingId/digital-code',
-                'PUT /accounts/:listingId/publish'
+                'GET /api/accounts',
+                'GET /api/accounts/:listingId',
+                'POST /api/accounts',
+                'POST /api/accounts/:listingId/digital-code',
+                'PUT /api/accounts/:listingId/publish'
             ],
             analytics: [
-                'GET /analytics/overview',
-                'GET /analytics/listings',
-                'GET /analytics/sales',
-                'GET /analytics/alerts'
+                'GET /api/analytics/overview',
+                'GET /api/analytics/listings',
+                'GET /api/analytics/sales',
+                'GET /api/analytics/alerts'
             ],
             bulk: [
-                'GET /bulk',
-                'GET /bulk/:id',
-                'POST /bulk',
-                'PUT /bulk/:id'
+                'GET /api/bulk',
+                'GET /api/bulk/:id',
+                'POST /api/bulk',
+                'PUT /api/bulk/:id'
             ],
             competitors: [
-                'GET /competitors',
-                'GET /competitors/:id',
-                'POST /competitors',
-                'GET /competitors/:id/listings',
-                'GET /competitors/:id/analytics',
-                'DELETE /competitors/:id'
+                'GET /api/competitors',
+                'GET /api/competitors/:id',
+                'POST /api/competitors',
+                'GET /api/competitors/:id/listings',
+                'GET /api/competitors/:id/analytics',
+                'DELETE /api/competitors/:id'
             ],
             dashboard: [
-                'GET /dashboard/summary',
-                'GET /dashboard/listings',
-                'GET /dashboard/listings?status=draft|ready|onsale|sold'
+                'GET /api/dashboard/summary',
+                'GET /api/dashboard/listings',
+                'GET /api/dashboard/listings?status=draft|ready|onsale|sold'
             ],
             exchanges: [
-                'GET /exchanges',
-                'GET /exchanges?role=buyer|seller&status=complete'
+                'GET /api/exchanges',
+                'GET /api/exchanges?role=buyer|seller&status=complete'
             ],
             listings: [
-                'GET /listings',
-                'GET /listings?owner=me',
-                'GET /listings/:id',
-                'POST /listings',
-                'PATCH /listings/:id',
-                'PUT /listings/:id/status',
-                'DELETE /listings/:id',
-                'GET /listings/:id/digital-goods',
-                'PUT /listings/:id/digital-goods',
-                'POST /listings/:id/photo'
+                'GET /api/listings',
+                'GET /api/listings?owner=me',
+                'GET /api/listings/:id',
+                'POST /api/listings',
+                'PATCH /api/listings/:id',
+                'PUT /api/listings/:id/status',
+                'DELETE /api/listings/:id',
+                'GET /api/listings/:id/digital-goods',
+                'PUT /api/listings/:id/digital-goods',
+                'POST /api/listings/:id/photo'
             ],
             products: [
-                'GET /products',
-                'GET /products/:id'
+                'GET /api/products',
+                'GET /api/products/:id'
             ],
             profile: [
-                'GET /profile',
-                'GET /profile?id=user_id'
+                'GET /api/profile',
+                'GET /api/profile?id=user_id'
             ],
             settings: [
-                'GET /settings',
-                'PATCH /settings',
-                'GET /settings/api-keys'
+                'GET /api/settings',
+                'PATCH /api/settings',
+                'GET /api/settings/api-keys'
             ],
             steam: [
-                'GET /steam/escrows',
-                'GET /steam/escrows/:id',
-                'GET /steam/trade-ban',
-                'GET /steam/inventory/:profileId/:appId'
+                'GET /api/steam/escrows',
+                'GET /api/steam/escrows/:id',
+                'GET /api/steam/trade-ban',
+                'GET /api/steam/inventory/:profileId/:appId'
             ],
             wallet: [
-                'GET /wallet',
-                'GET /wallet?owner=me&balance_only=true'
+                'GET /api/wallet',
+                'GET /api/wallet?owner=me&balance_only=true'
             ],
             health: [
-                'GET /health'
+                'GET /api/health'
             ]
         },
         documentation: 'See src/samples/ for usage examples'
     });
 });
+
+app.use('/api', apiRouter);
 
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
@@ -114,14 +115,23 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal Server Error', details: err.message });
 });
 
-// Manejo de rutas no encontradas (404)
-app.use((req, res) => {
+app.use('/api', (req, res) => {
     console.log(`Route not found: ${req.method} ${req.url}`);
-    res.status(404).json({ 
+    res.status(404).json({
         error: 'Route not found',
         method: req.method,
         url: req.url
     });
+});
+
+const distPath = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(distPath));
+
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(port, () => {
