@@ -4,7 +4,8 @@ import JsonViewer from '../components/JsonViewer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorBanner from '../components/ErrorBanner';
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? '';
+const API_BASE =
+  import.meta.env.VITE_API_BASE ?? (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 const Home = () => {
   const [status, setStatus] = useState<unknown | null>(null);

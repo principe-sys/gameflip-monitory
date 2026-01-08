@@ -3,7 +3,8 @@ import JsonViewer from './JsonViewer';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorBanner from './ErrorBanner';
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? '';
+const API_BASE =
+  import.meta.env.VITE_API_BASE ?? (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 type RequestPanelProps = {
   title: string;
