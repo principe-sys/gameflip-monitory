@@ -12,7 +12,20 @@ app.use(express.json());
 
 const corsOrigin = process.env.CORS_ORIGIN;
 if (corsOrigin) {
+codex/migrate-features-from-gfapi-to-gameflip-monitory-44cpqz
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', corsOrigin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    return next();
+  });
+=======
   app.use(cors({ origin: corsOrigin, credentials: true }));
+main
 }
 
 app.use(buildSessionMiddleware());
