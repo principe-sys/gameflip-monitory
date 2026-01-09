@@ -3,11 +3,12 @@
 const express = require('express');
 const router = express.Router();
 const { getGf } = require('../services/gameflip');
+const { requireGf } = require('../middleware/gfCredentials');
 
 // GET /profile
-router.get('/', async (req, res) => {
+router.get('/', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     const profileId = req.query.id || 'me';
     const profile = await gf.profile_get(profileId);
     res.json(profile);

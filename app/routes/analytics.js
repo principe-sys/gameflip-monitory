@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const { getGf } = require('../services/gameflip');
+const { requireGf } = require('../middleware/gfCredentials');
 
 /**
  * Helper function to get all listings with pagination
@@ -58,9 +59,9 @@ async function getAllListings(gf, ownerId) {
 /**
  * GET /analytics/overview - Get analytics overview
  */
-router.get('/overview', async (req, res) => {
+router.get('/overview', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     const profile = await gf.profile_get('me');
     const ownerId = profile.owner;
     
@@ -120,9 +121,9 @@ router.get('/overview', async (req, res) => {
 /**
  * GET /analytics/listings - Get detailed listing analytics
  */
-router.get('/listings', async (req, res) => {
+router.get('/listings', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     const profile = await gf.profile_get('me');
     const ownerId = profile.owner;
     
@@ -173,9 +174,9 @@ router.get('/listings', async (req, res) => {
 /**
  * GET /analytics/sales - Get sales analytics
  */
-router.get('/sales', async (req, res) => {
+router.get('/sales', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     const profile = await gf.profile_get('me');
     const ownerId = profile.owner;
     
@@ -224,9 +225,9 @@ router.get('/sales', async (req, res) => {
 /**
  * GET /analytics/alerts - Get alerts for listings that need attention
  */
-router.get('/alerts', async (req, res) => {
+router.get('/alerts', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     const profile = await gf.profile_get('me');
     const ownerId = profile.owner;
     
@@ -284,4 +285,3 @@ router.get('/alerts', async (req, res) => {
 });
 
 module.exports = router;
-
