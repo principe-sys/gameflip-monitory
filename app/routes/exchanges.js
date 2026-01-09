@@ -3,11 +3,49 @@
 const express = require('express');
 const router = express.Router();
 const { getGf } = require('../services/gameflip');
+const { requireGf } = require('../middleware/gfCredentials');
+
+async function getAllExchanges(gf, params = {}) {
+  let allExchanges = [];
+  let nextPage = null;
+  let iterations = 0;
+  const MAX_ITERATIONS = 100;
+
+  while (iterations < MAX_ITERATIONS) {
+    const query = { ...params };
+    if (nextPage) {
+      query.nextPage = nextPage;
+    }
+    const result = await gf.exchange_search(query);
+    let exchanges = [];
+    let foundNextPage = null;
+
+    if (Array.isArray(result)) {
+      exchanges = result;
+    } else if (result && typeof result === 'object') {
+      exchanges = result.exchanges || result.data || [];
+      foundNextPage = result.next_page || null;
+    }
+
+    if (exchanges.length > 0) {
+      allExchanges = allExchanges.concat(exchanges);
+    }
+
+    if (foundNextPage) {
+      nextPage = foundNextPage;
+      iterations += 1;
+    } else {
+      break;
+    }
+  }
+
+  return allExchanges;
+}
 
 // GET /exchanges
-router.get('/', async (req, res) => {
+router.get('/', requireGf, async (req, res) => {
   try {
-    const gf = getGf();
+    const gf = req.gf || getGf();
     
     // Build search parameters from query string
     const params = {};
@@ -33,9 +71,7 @@ router.get('/', async (req, res) => {
       params.buyer = profile.owner;
     }
     
-    const exchanges = await gf.exchange_search(params) || [];
-    const exchangeList = Array.isArray(exchanges) ? exchanges : 
-                        (exchanges.exchanges || exchanges.data || []);
+    const exchangeList = await getAllExchanges(gf, params);
     
     res.json({
       status: 'SUCCESS',

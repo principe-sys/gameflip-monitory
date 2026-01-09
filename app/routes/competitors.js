@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const { getGf } = require('../services/gameflip');
+const { requireGf } = require('../middleware/gfCredentials');
 
 /**
  * POST /competitors - Create a competitor profile
@@ -90,10 +91,10 @@ router.get('/:id', async (req, res) => {
  * GET /competitors/:id/listings - Get listings from a competitor
  * This fetches listings using GameFlip API by owner_id
  */
-router.get('/:id/listings', async (req, res) => {
+router.get('/:id/listings', requireGf, async (req, res) => {
   try {
     const { id } = req.params;
-    const gf = getGf();
+    const gf = req.gf || getGf();
     
     // Get query parameters for filtering
     const query = {
@@ -149,10 +150,10 @@ router.get('/:id/listings', async (req, res) => {
 /**
  * GET /competitors/:id/analytics - Compare competitor prices with your listings
  */
-router.get('/:id/analytics', async (req, res) => {
+router.get('/:id/analytics', requireGf, async (req, res) => {
   try {
     const { id } = req.params; // competitor owner_id
-    const gf = getGf();
+    const gf = req.gf || getGf();
     
     // Get your profile to fetch your listings
     const profile = await gf.profile_get('me');
@@ -244,4 +245,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
