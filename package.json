@@ -2,30 +2,22 @@
   "name": "gfapi",
   "version": "0.1.1",
   "description": "Gameflip API",
-  "keywords": [
-    "Gameflip"
-  ],
+  "keywords": ["Gameflip"],
   "homepage": "https://github.com/iJJi/gfapi",
-  "bugs": {
-    "url": "https://github.com/iJJi/gfapi/issues"
-  },
+  "bugs": { "url": "https://github.com/iJJi/gfapi/issues" },
   "author": "Eng-Shien Wu <engshien.wu@ijji.com>",
   "license": "MIT",
   "private": true,
-  "files": [
-    "index.js"
-  ],
+  "files": ["index.js"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iJJi/gfapi.git"
   },
-  "engines": {
-    "node": ">=8.5.0"
-  },
+  "engines": { "node": ">=8.5.0" },
   "scripts": {
     "start": "node app/server.js",
     "build": "npm --prefix frontend install && npm --prefix frontend run build",
-    "dev": "concurrently \"nodemon --watch app app/server.js\" \"npm --prefix frontend run dev\""
+    "dev": "concurrently \"nodemon --watch app app/server.js\" \"npm --prefix frontend run dev\"",
     "bulk_listing": "node src/samples/bulk_listing.js",
     "docs": "jsdoc -c jsdoc_conf.js -d docs -P package.json index.js; (cd src/samples && docco -o ../../docs/samples *.js *.rb)"
   },
@@ -47,8 +39,6 @@
     "nodemon": "^3.1.7"
   },
   "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "directories": { "doc": "docs" },
   "type": "commonjs"
 }
