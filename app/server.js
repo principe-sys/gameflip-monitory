@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 const { buildSessionMiddleware } = require('./middleware/session');
 const { gfCredentials } = require('./middleware/gfCredentials');
@@ -11,6 +12,7 @@ app.use(express.json());
 
 const corsOrigin = process.env.CORS_ORIGIN;
 if (corsOrigin) {
+codex/migrate-features-from-gfapi-to-gameflip-monitory-44cpqz
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', corsOrigin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -21,6 +23,9 @@ if (corsOrigin) {
     }
     return next();
   });
+=======
+  app.use(cors({ origin: corsOrigin, credentials: true }));
+main
 }
 
 app.use(buildSessionMiddleware());
