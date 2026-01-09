@@ -25,11 +25,15 @@
     "axios": "^1.13.2",
     "bluebird": "^3.7.2",
     "bunyan": "^1.8.15",
+    "connect-redis": "^8.0.1",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-session": "^1.18.1",
     "file-type": "^16.5.4",
     "http-errors": "^1.8.1",
     "limiter": "^2.1.0",
+    "redis": "^4.7.0",
     "speakeasy": "^2.0.0"
   },
   "devDependencies": {

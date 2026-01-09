@@ -3,6 +3,52 @@
 const express = require('express');
 const router = express.Router();
 const { getGf } = require('../services/gameflip');
+const { requireAuth } = require('../middleware/requireAuth');
+const {
+  listAccounts,
+  createAccount,
+  updateAccount,
+  deleteAccount,
+  scrubAccount
+} = require('../services/accountStore');
+
+function isCredentialPayload(body) {
+  return Boolean(body && (body.apiKey || body.apiSecret));
+}
+
+router.get('/', requireAuth, async (req, res) => {
+  const accounts = await listAccounts(req.session.userId);
+  res.json(accounts.map(scrubAccount));
+});
+
+router.post('/:id/select', requireAuth, async (req, res) => {
+  const accounts = await listAccounts(req.session.userId);
+  const found = accounts.find((account) => account.id === req.params.id);
+  if (!found) {
+    return res.status(404).json({ error: 'Account not found' });
+  }
+  req.session.activeAccountId = found.id;
+  return res.json({ ok: true, activeAccountId: found.id });
+});
+
+router.put('/:id', requireAuth, async (req, res) => {
+  const updated = await updateAccount(req.session.userId, req.params.id, req.body);
+  if (!updated) {
+    return res.status(404).json({ error: 'Account not found' });
+  }
+  res.json(scrubAccount(updated));
+});
+
+router.delete('/:id', requireAuth, async (req, res) => {
+  const deleted = await deleteAccount(req.session.userId, req.params.id);
+  if (!deleted) {
+    return res.status(404).json({ error: 'Account not found' });
+  }
+  if (req.session.activeAccountId === req.params.id) {
+    req.session.activeAccountId = null;
+  }
+  res.json({ ok: true });
+});
 
 /**
  * POST /accounts - Create a new account listing
@@ -22,7 +68,19 @@ const { getGf } = require('../services/gameflip');
  */
 router.post('/', async (req, res) => {
   try {
-    const gf = getGf();
+    if (isCredentialPayload(req.body)) {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const { name, apiKey, apiSecret } = req.body;
+      if (!name || !apiKey || !apiSecret) {
+        return res.status(400).json({ error: 'name, apiKey, apiSecret are required' });
+      }
+      const account = await createAccount(req.session.userId, { name, apiKey, apiSecret });
+      return res.status(201).json(scrubAccount(account));
+    }
+
+    const gf = req.gf || getGf();
     
     // Extract data from request body
     const {
@@ -240,4 +298,3 @@ router.get('/:listingId', async (req, res) => {
 });
 
 module.exports = router;
-

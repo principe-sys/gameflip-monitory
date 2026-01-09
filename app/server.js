@@ -1,19 +1,32 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
+const { buildSessionMiddleware } = require('./middleware/session');
+const { gfCredentials } = require('./middleware/gfCredentials');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+const corsOrigin = process.env.CORS_ORIGIN;
+if (corsOrigin) {
+  app.use(cors({ origin: corsOrigin, credentials: true }));
+}
+
+app.use(buildSessionMiddleware());
+app.use(gfCredentials());
+
 const apiRouter = express.Router();
 
 apiRouter.use('/accounts', require('./routes/accounts'));
+apiRouter.use('/auth', require('./routes/auth'));
 apiRouter.use('/analytics', require('./routes/analytics'));
 apiRouter.use('/bulk', require('./routes/bulk'));
 apiRouter.use('/competitors', require('./routes/competitors'));
 apiRouter.use('/dashboard', require('./routes/dashboard'));
+apiRouter.use('/debug', require('./routes/debug'));
 apiRouter.use('/exchanges', require('./routes/exchanges'));
 apiRouter.use('/health', require('./routes/health'));
 apiRouter.use('/listings', require('./routes/listings'));
