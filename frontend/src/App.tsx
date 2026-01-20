@@ -7,6 +7,8 @@ import CompetitorDetail from './pages/CompetitorDetail';
 import Accounts from './pages/Accounts';
 import Login from './pages/Login';
 import Wallet from './pages/Wallet';
+import Listings from './pages/Listings';
+import ListingDetail from './pages/ListingDetail';
 
 const App = () => {
   return (
@@ -22,6 +24,9 @@ const App = () => {
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/listings" element={<Listings />} />
+          <Route path="/listings/:id" element={<ListingDetail />} />
+
         </Routes>
       </main>
     </div>
