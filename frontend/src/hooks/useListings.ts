@@ -16,43 +16,42 @@ export type ListingsFilters = {
   category?: string;
 };
 
+function normalizeFilters(filters: ListingsFilters) {
+  // Esto estabiliza valores y evita keys diferentes por espacios/undefined
+  return {
+    term: filters.term?.trim() || '',
+    status: filters.status?.trim() || '',
+    platform: filters.platform?.trim() || '',
+    category: filters.category?.trim() || ''
+  };
+}
+
 function buildFirstPagePath(filters: ListingsFilters) {
+  const f = normalizeFilters(filters);
   const params = new URLSearchParams();
-  if (filters.term?.trim()) params.set('term', filters.term.trim());
-  if (filters.status?.trim()) params.set('status', filters.status.trim());
-  if (filters.platform?.trim()) params.set('platform', filters.platform.trim());
-  if (filters.category?.trim()) params.set('category', filters.category.trim());
+  if (f.term) params.set('term', f.term);
+  if (f.status) params.set('status', f.status);
+  if (f.platform) params.set('platform', f.platform);
+  if (f.category) params.set('category', f.category);
+
   const qs = params.toString();
   return `/listings${qs ? `?${qs}` : ''}`;
 }
 
-import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
-
-export type Listing = Record<string, any>;
-
-export function useListing(id?: string) {
-  return useQuery({
-    queryKey: ['listing', id],
-    queryFn: () => apiFetch<Listing>(`/listings/${id}`),
-    enabled: Boolean(id)
-  });
-}
-
-
 function buildNextPagePath(nextPage: string) {
-  // El backend acepta nextPage y lo pasa a gf.listing_search()
   const params = new URLSearchParams();
   params.set('nextPage', nextPage);
   return `/listings?${params.toString()}`;
 }
 
 export function useListings(filters: ListingsFilters) {
+  const f = normalizeFilters(filters);
+
   return useInfiniteQuery({
-    queryKey: ['listings', filters],
+    queryKey: ['listings', f.term, f.status, f.platform, f.category],
     initialPageParam: null as string | null,
-    queryFn: async ({ pageParam }) => {
-      const path = pageParam ? buildNextPagePath(pageParam) : buildFirstPagePath(filters);
+    queryFn: ({ pageParam }) => {
+      const path = pageParam ? buildNextPagePath(pageParam) : buildFirstPagePath(f);
       return apiFetch<ListingsResponse>(path);
     },
     getNextPageParam: (lastPage) => lastPage.next_page ?? undefined
