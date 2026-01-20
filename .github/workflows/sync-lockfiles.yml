@@ -1,0 +1,44 @@
+name: Sync lockfiles
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Update root lockfile
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - name: Update frontend lockfile (if present)
+        run: |
+          if [ -f frontend/package.json ]; then
+            rm -rf frontend/node_modules frontend/package-lock.json
+            npm --prefix frontend install
+          fi
+
+      - name: Create PR with updated lockfiles
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/sync-lockfiles
+          title: "chore: sync lockfiles"
+          commit-message: "chore: sync lockfiles"
+          body: |
+            Regenera package-lock.json para que npm ci no falle en Railway.
+          add-paths: |
+            package-lock.json
+            frontend/package-lock.json
