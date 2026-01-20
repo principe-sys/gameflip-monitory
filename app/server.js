@@ -80,6 +80,10 @@ app.listen(port, () => {
   console.log(`GFAPI server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
   console.log(`API Key configured: ${!!process.env.GAMEFLIP_API_KEY}`);
+  codex/fix-merge-conflicts-and-ensure-frontend-build
   console.log("DEPLOY_TAG: FIX_CONFLICTS_AND_BUILD");
   console.log("RAILWAY_SHA:", process.env.RAILWAY_GIT_COMMIT_SHA || "n/a");
+
+  console.log("DEPLOY_TAG: FIX_MERGE_CONFLICTS_2026_01_20");
+main
 });

@@ -1,9 +1,27 @@
 const session = require('express-session');
-const RedisStore = require('connect-redis').default;
-const { getRedisClient } = require('../services/redis');
+const { getSession, setSession, deleteSession } = require('../services/sessionStore');
+
+class InternalSessionStore extends session.Store {
+  get(sid, callback) {
+    getSession(sid)
+      .then((data) => callback(null, data))
+      .catch((err) => callback(err));
+  }
+
+  set(sid, sessionData, callback) {
+    setSession(sid, sessionData)
+      .then(() => callback(null))
+      .catch((err) => callback(err));
+  }
+
+  destroy(sid, callback) {
+    deleteSession(sid)
+      .then(() => callback(null))
+      .catch((err) => callback(err));
+  }
+}
 
 function buildSessionMiddleware() {
-  const redisClient = getRedisClient();
   const isProduction = process.env.NODE_ENV === 'production';
 
   const sessionOptions = {
@@ -16,12 +34,9 @@ function buildSessionMiddleware() {
       secure: isProduction,
       sameSite: process.env.COOKIE_SAMESITE || (isProduction ? 'lax' : 'lax'),
       maxAge: 1000 * 60 * 60 * 24 * 7
-    }
+    },
+    store: new InternalSessionStore()
   };
-
-  if (redisClient) {
-    sessionOptions.store = new RedisStore({ client: redisClient });
-  }
 
   return session(sessionOptions);
 }
