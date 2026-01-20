@@ -80,4 +80,5 @@ app.listen(port, () => {
   console.log(`GFAPI server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'production'}`);
   console.log(`API Key configured: ${!!process.env.GAMEFLIP_API_KEY}`);
+  console.log("DEPLOY_TAG: FIX_MERGE_CONFLICTS_2026_01_20");
 });
