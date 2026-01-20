@@ -20,6 +20,9 @@ const Navbar = () => {
         <NavLink to="/wallet" className="navbar__link">
           Wallet
         </NavLink>
+        <NavLink to="/listings" className="navbar__link">
+          Listings
+        </NavLink>
       </nav>
     </header>
   );
