@@ -26,6 +26,20 @@ function buildFirstPagePath(filters: ListingsFilters) {
   return `/listings${qs ? `?${qs}` : ''}`;
 }
 
+import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '../lib/api';
+
+export type Listing = Record<string, any>;
+
+export function useListing(id?: string) {
+  return useQuery({
+    queryKey: ['listing', id],
+    queryFn: () => apiFetch<Listing>(`/listings/${id}`),
+    enabled: Boolean(id)
+  });
+}
+
+
 function buildNextPagePath(nextPage: string) {
   // El backend acepta nextPage y lo pasa a gf.listing_search()
   const params = new URLSearchParams();
